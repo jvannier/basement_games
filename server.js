@@ -18,7 +18,7 @@ client.connect();
 
 
 // ROOT
-app.get('/', async (req, res) => {
+app.get('/users/', async (req, res) => {
     let err, query_result = await client.query('SELECT * FROM testing;')
     console.log(err, query_result)
     let response = []
