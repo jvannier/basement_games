@@ -2,7 +2,7 @@ const { Client } = require('pg');
 const express = require("express");
 const app = express()
 app.use(express.json())
-app.use(express.static('build'));
+app.use(express.static('frontend/build'));
 app.use(express.urlencoded({ extended: false }))
 
 const port = process.env.PORT || 3001;
