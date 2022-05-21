@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run frontend\"",
-    "install": "cd frontend && npm install",
+    "install": "cd frontend && npm run build && npm install",
     "frontend": "cd frontend && npm run start",
     "server": "node server.js",
     "build": "cd frontend && npm run build",
