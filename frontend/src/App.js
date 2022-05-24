@@ -1,31 +1,49 @@
 import React, { useEffect, useState } from "react";
+import About from "./components/About";
+import Admin from "./components/Admin";
+import Events from "./components/Events";
+import NavBar from "./components/NavBar";
 import './App.css';
+import { BrowserRouter, Routes, Link, Route } from 'react-router-dom'
+import { is_logged_in_admin } from "./api_util";
 
 
 function App() {
-  const [results, setResults] = useState("NO RESULTS")
+  let [userID, setUserID] = useState();
+  let [userName, setUserName] = useState();
+  let [adminPageLink, setAdminPageLink] = useState(false);
+
   useEffect(() => {
-    async function fetchData() {
-      const response = await fetch(
-        `https://basement-games.herokuapp.com/users`,
-        {
-          headers: {
-            "Access-Control-Allow-Origin": "0.0.0.0"
-          }
-        }
-      );
-      const data = await response.json()
-      setResults(data);
-    }
-    fetchData();
-  });
+    is_logged_in_admin(userID).then(result => {
+      if (result === true) {
+        setAdminPageLink(
+          <Route exact path="/admin" element={
+            <Admin userID={userID} />
+          }/>
+        );
+      } else {
+        setAdminPageLink("");
+      }
+    });
+  }, []);
 
   return (
     <div className="App">
-      <header className="App-header">
-        Test
-        { JSON.stringify(results) }
-      </header>
+      <BrowserRouter>
+        <NavBar
+          userID={userID} setUserID={setUserID}
+          userName={userName} setUserName={setUserName}
+        />
+        <Routes>
+          <Route exact path="/" element={
+            <Events/>
+          }/>
+          <Route exact path="/about" element={
+            <About userID={userID} />
+          }/>
+          {adminPageLink}
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

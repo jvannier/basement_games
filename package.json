@@ -1,12 +1,11 @@
 {
-  "name": "basement_games_front_end",
+  "name": "basement_games",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
     "@testing-library/user-event": "^13.5.0",
-    "concurrently": "^7.2.0",
     "pg": "^8.7.3",
     "pg-connection-string": "^2.5.0",
     "react": "^18.1.0",
@@ -16,10 +15,12 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run frontend\"",
-    "install": "cd frontend && npm run build && npm install",
+    "start": "npm run server",
+    "install": "npm run installfrontend && npm run installbackend",
+    "installfrontend": "cd frontend && npm install",
+    "installbackend": "cd backend && npm install",
     "frontend": "cd frontend && npm run start",
-    "server": "node server.js",
+    "server": "node backend/server.js",
     "build": "cd frontend && npm run build",
     "heroku-postbuild": "npm run build"
   },
