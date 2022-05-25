@@ -28,27 +28,26 @@ function Login(props) {
 
     useEffect(() => {
         // Check user already logged in
-        let userID = localStorage.getItem("id");
-        if (userID !== null && userID !== undefined) {
+        if (props.userID !== null && props.userID !== undefined) {
             // Check if the login has expired
             async function fetchUserData() {
-                const data = await make_api_call(`users/logged_in?id=${userID}`); 
+                const data = await make_api_call(`users/logged_in?id=${props.userID}`);
                 if ("result" in data) {
                     if (data["result"] === true) {
-                        login(userID, data["name"]);
+                        login(props.userID, data["name"]);
                     } else {
                         logout();  // Login expired
                     }
                 } else {
                     logout();
-                    alert(data);  // Error occurred
+                    alert(JSON.stringify(data));  // Error occurred
                 }
             }
             fetchUserData();
         } else {
             logout();
         }
-      }, []);
+      }, [props.userID]);
 
     if (props.userID === undefined) {
         // Login

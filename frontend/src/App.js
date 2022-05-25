@@ -4,15 +4,17 @@ import Admin from "./components/Admin";
 import Events from "./components/Events";
 import NavBar from "./components/NavBar";
 import './App.css';
-import { BrowserRouter, Routes, Link, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { is_logged_in_admin } from "./api_util";
 
 
 function App() {
-  let [userID, setUserID] = useState();
+  let [userID, setUserID] = useState(localStorage.getItem("id"));
   let [userName, setUserName] = useState();
-  let [adminPageLink, setAdminPageLink] = useState(false);
+  let [adminPageLink, setAdminPageLink] = useState("");
 
+  // TODO: vuln: if user is logged in and another person puts their id in localStorage it'll turn up logged in as it is
+  //    IDEA: also put where logged in FROM and check that?
   useEffect(() => {
     is_logged_in_admin(userID).then(result => {
       if (result === true) {
@@ -25,8 +27,9 @@ function App() {
         setAdminPageLink("");
       }
     });
-  }, []);
+  }, [userID]);
 
+  // TODO: SuspenseAPI stuff (+lazy loading)
   return (
     <div className="App">
       <BrowserRouter>

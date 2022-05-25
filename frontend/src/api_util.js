@@ -1,18 +1,20 @@
 import { API_URL } from "./consts";
 
 
-const make_api_call = async (endpoint, method = "GET") => {
+const make_api_call = async (endpoint, method = "GET", data = {}) => {
     try {
+        let options = {
+            mode: "same-origin",
+            method: method,
+        };
+        if (method === "POST" || method === "PATCH") {
+            options["headers"] = {
+                'Content-Type': 'application/json',
+            };
+            options["body"] = JSON.stringify(data);
+        }
         const response = await fetch(
-            `${API_URL}/${endpoint}`,
-            {
-                mode: "same-origin",
-                method: method,
-                // If breaks on live, try:
-                // headers: {
-                //   "Access-Control-Allow-Origin": "same-origin"
-                // }
-            }
+            `${API_URL}/${endpoint}`, options,
         );
         return await response.json();
     } catch (SyntaxError) {
@@ -27,8 +29,8 @@ const is_logged_in_admin = async (userID) => {
         return false;
     }
 
-    const data = await make_api_call(`/users/is_admin/?id=${userID}`)
-    // if not logged or not admin in return false
+    const data = await make_api_call(`users/is_admin/?id=${userID}`)
+    // if not logged or not an admin, then return false
     return Boolean(data.is_admin && data.logged_in);
 }
 

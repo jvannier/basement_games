@@ -26,20 +26,13 @@ app.use('/events/', eventsController)
 
 // Admin pages to view signed up users and add / edit events
 
-// TODO: Delete this endpoint prolly
-app.get('/testing/', async (req, res) => {
-  const run_query = require("./run_query_util").run_query
-    query = "SELECT * FROM testing;"
-    await run_query(client, query, res);
-});
-
 //      events: id, date, mtg set, max people, prizing (?) 
 //    junction table of users to events they're signed up for :D and if they've paid for that event
 
 // from talking to brett: create event-> name, 8 slots (players registered), join button, date, (no prizing info? -> or just an extra field brett can type into) -> further details
 // entry cost <-. Type (if it's draft or not? draft by default)
 
-// for brett: how much each pack costs
+// for brett: how much each pack costs? -> LATER / DIFF TABLE?
 
 
 app.listen(port, () => {});

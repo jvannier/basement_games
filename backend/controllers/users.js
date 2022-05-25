@@ -55,6 +55,7 @@ module.exports = (client) => {
                 last_login = to_timestamp(${Math.floor(new Date().getTime() / 1000)}),
                 login_expiration_time = to_timestamp(${req.query.login_expiration_time});
         `;
+        console.log(query);
         await run_query(client, query, res);
     });
 

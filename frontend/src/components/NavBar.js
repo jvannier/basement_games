@@ -6,7 +6,7 @@ import { is_logged_in_admin } from "../api_util"
 
 
 function NavBar(props) {
-  let [adminPageLink, setAdminPageLink] = useState(false);
+  let [adminPageLink, setAdminPageLink] = useState("");
 
   useEffect(() => {
     if (props.userID !== undefined) {
@@ -14,11 +14,13 @@ function NavBar(props) {
         if (result === true) {
           setAdminPageLink(<Link to="/admin">Admin</Link>);
         } else {
-          setAdminPageLink("")
+          setAdminPageLink("");
         }
       });
+    } else {
+      setAdminPageLink("");
     }
-  }, []);
+  }, [props.userID]);
 
   return (
     <span className="NavBar">
