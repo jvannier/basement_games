@@ -4,23 +4,13 @@ import AddEvent from "./AddEvent";
 
 
 function Admin(props) {
-    let [events, setEvents] = useState("NO EVENTS");
-    let [page, setPage] = useState(<AddEvent events={events}/>);
+    // let [events, setEvents] = useState("NO EVENTS");
     let [isAdmin, setIsAdmin] = useState(false);
+    let [page, setPage] = useState(<AddEvent isAdmin={isAdmin}/>);
 
-    useEffect(() => {
-        is_logged_in_admin(props.userID, props.token).then(result => {
-            setIsAdmin(result);
-        });
+    useEffect(() => {}, [props.isAdmin]);  // Re-render on props.isAdmin change
 
-        if (isAdmin === true) {
-            make_api_call(`events/`).then(data => {
-                setEvents(data.rows);
-            });
-        }
-    }, [props.userID]);
-
-    if (isAdmin !== true) {  // If not admin refuse to render
+    if (props.isAdmin !== true) {  // If not admin refuse to render
         return (
             <div>
                 RESTRICTED ACCESS
@@ -33,14 +23,14 @@ function Admin(props) {
             <p>TODO: SUPER SECRET ADMIN STUFF</p>
 
             <button onClick={() => {
-                setPage(<AddEvent isAdmin={isAdmin}/>);
+                setPage(<AddEvent isAdmin={props.isAdmin}/>);
             }}>Add Event</button>
 
             <button onClick={() => {
                 setPage(<div>TODO
                     seeing who has signed up, checkbox for who has paid(?)
 
-                    {JSON.stringify(events)}
+                    {/* {JSON.stringify(events)} */}
                 </div>);
             }}>Edit Event</button>
 

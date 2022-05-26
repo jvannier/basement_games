@@ -32,6 +32,7 @@ module.exports = (client) => {
     });
 
     router.post('/', async (req, res) => {
+        console.log("post to events?")
         console.log(req.query);
         console.log(req.body);
         let err = await detect_sql_injection(req.query, res);

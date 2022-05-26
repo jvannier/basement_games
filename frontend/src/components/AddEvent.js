@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './AddEvent.css';
 import { make_api_call } from "../api_util";
-import DatePicker from 'react-date-picker';
+// import DatePicker from 'react-date-picker';
 // import DatePicker from 'react-date-picker/dist/entry.nostyle';
-import TimePicker from 'react-time-picker';
+// import TimePicker from 'react-time-picker';
 // import TimePicker from 'react-time-picker/dist/entry.nostyle'
 import DateTimePicker from 'react-datetime-picker';
 
@@ -29,6 +29,8 @@ function AddEvent(props) {
     const [maxPeople, setMaxPeople] = useState(8);
     const [magicSet, setMagicSet] = useState();
 
+    useEffect(() => {}, [props.isAdmin]);  // Re-render on props.isAdmin change
+
     function submit(event) {
         event.preventDefault();
 
@@ -37,10 +39,12 @@ function AddEvent(props) {
             const eventDateUTC = convertDateToUTC(eventDate);
 
             // Make API call to create event
-            make_api_call(`events?token=${props.token}`, "POST", {
+            make_api_call(`events/`, "POST", {
                 entryCost, extraDetails, eventDateUTC,
                 eventName, eventType, maxPeople, magicSet,
             });
+
+            // TODO: success message / empty out the input boxes? -> Do we want to just NOT preventDefault?
         }
     }
 

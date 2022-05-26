@@ -12,6 +12,7 @@ function App() {
   let [userID, setUserID] = useState(localStorage.getItem("id"));
   let [userName, setUserName] = useState();
   let [token, setToken] = useState(localStorage.getItem("token"));
+  let [isAdmin, setIsAdmin] = useState(false);
 
   let [adminPageLink, setAdminPageLink] = useState("");
 
@@ -20,18 +21,15 @@ function App() {
       if (result === true) {
         setAdminPageLink(
           <Route exact path="/admin" element={
-            <Admin userID={userID} token={token} />
+            <Admin isAdmin={isAdmin} />
           }/>
         );
       } else {
         setAdminPageLink("");
       }
+      setIsAdmin(result);
     });
-  }, [token]);
-
-  useEffect(() => {
-    console.log("State:", token);
-  });
+  }, [token, isAdmin]);
 
   // TODO: SuspenseAPI stuff (+lazy loading)
   return (
