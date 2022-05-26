@@ -32,36 +32,47 @@ module.exports = (client) => {
     });
 
     router.post('/', async (req, res) => {
-        console.log("post to events?")
-        console.log(req.body);
-        let err = await detect_sql_injection(req.body, res);
+        let err = await detect_sql_injection(req.query, res);
         if (err !== undefined) {
-            return;
+            return err;
         }
+        err = await detect_sql_injection(req.body, res);
+        if (err !== undefined) {
+            return err;
+        }
+
+        // TODO: make sure it's an admin before actually createing
+        // req.query.userID + req.query.token
+
         let query = `
             INSERT INTO events (
                 name, date, mtg_set, max_people,
-                entry_cost, event_type, extra_details,
+                entry_cost, event_type, extra_details
             ) VALUES (
-                '${req.body.name}',
-                to_timestamp(${req.body.date})
-                '${req.body.mtg_set}',
-                '${req.body.max_people}',
-                '${req.body.entry_cost}',
-                '${req.body.event_type}',
-                '${req.body.extra_details}',
+                '${req.body.eventName}',
+                to_timestamp(${req.body.eventDateUTC}),
+                '${req.body.magicSet}',
+                '${req.body.maxPeople}',
+                '${req.body.entryCost}',
+                '${req.body.eventType}',
+                '${req.body.extraDetails}'
             );
-        `
-        console.log(query)
-        // await run_query(client, query, res);
+        `;
+        await run_query(client, query, res);
     });
     
     router.delete('/', async (req, res) => {
         let err = await detect_sql_injection(req.query, res);
         if (err !== undefined) {
-            return;
+            return err;
         }
+
         // TODO: make sure it's an admin before actually deleting
+        let query = `
+            DELETE
+            FROM events
+            WHERE id=${req.query.eventID}
+        `;
     })
 
     return router;

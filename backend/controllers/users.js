@@ -67,7 +67,7 @@ module.exports = (client) => {
         //  Also create and store login token and login_expiration_time.
         let err = await detect_sql_injection(req.query, res);
         if (err !== undefined) {
-            return;
+            return err;
         }
 
         // Create user if it does not exist, otherwise update last_login
@@ -96,7 +96,7 @@ module.exports = (client) => {
         // Delete login token for user
         let err = await detect_sql_injection(req.query, res);
         if (err !== undefined) {
-            return;
+            return err;
         }
 
         delete_token(req.query.userID, req.query.token);
@@ -175,7 +175,7 @@ module.exports = (client) => {
     router.get('/logged_in', async (req, res) => {
         let err = await detect_sql_injection(req.query, res);
         if (err !== undefined) {
-            return;
+            return err;
         }
 
         // Check that token is valid

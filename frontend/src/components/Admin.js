@@ -5,7 +5,13 @@ import AddEvent from "./AddEvent";
 
 function Admin(props) {
     // let [events, setEvents] = useState("NO EVENTS");
-    let [page, setPage] = useState(<AddEvent isAdmin={props.isAdmin}/>);
+    let [page, setPage] = useState(
+        <AddEvent
+            userID={props.userID}
+            token={props.token}
+            isAdmin={props.isAdmin}
+        />
+    );
 
     useEffect(() => {}, [props.isAdmin]);  // Re-render on props.isAdmin change
 
@@ -22,7 +28,13 @@ function Admin(props) {
             <p>TODO: SUPER SECRET ADMIN STUFF</p>
 
             <button onClick={() => {
-                setPage(<AddEvent isAdmin={props.isAdmin}/>);
+                setPage(
+                    <AddEvent
+                        userID={props.userID}
+                        token={props.token}
+                        isAdmin={props.isAdmin}
+                    />
+                );
             }}>Add Event</button>
 
             <button onClick={() => {

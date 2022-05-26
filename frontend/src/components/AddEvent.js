@@ -32,7 +32,6 @@ function AddEvent(props) {
     useEffect(() => {}, [props.isAdmin]);  // Re-render on props.isAdmin change
 
     function submit(event) {
-        console.log("submit", props)
         event.preventDefault();
 
         if (props.isAdmin === true) {
@@ -40,7 +39,8 @@ function AddEvent(props) {
             const eventDateUTC = convertDateToUTC(eventDate).getTime();
 
             // Make API call to create event
-            make_api_call(`events/`, "POST", {
+            make_api_call(`events/?userID=${props.userID}&token=${props.token}`, "POST", {
+            // make_api_call(`events/`, "POST", {
                 entryCost, extraDetails, eventDateUTC,
                 eventName, eventType, maxPeople, magicSet,
             });

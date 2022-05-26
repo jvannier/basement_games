@@ -21,7 +21,7 @@ function App() {
       if (result === true) {
         setAdminPageLink(
           <Route exact path="/admin" element={
-            <Admin isAdmin={isAdmin} />
+            <Admin userID={userID} token={token} isAdmin={isAdmin} />
           }/>
         );
       } else {
