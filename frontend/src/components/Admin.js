@@ -5,8 +5,7 @@ import AddEvent from "./AddEvent";
 
 function Admin(props) {
     // let [events, setEvents] = useState("NO EVENTS");
-    let [isAdmin, setIsAdmin] = useState(false);
-    let [page, setPage] = useState(<AddEvent isAdmin={isAdmin}/>);
+    let [page, setPage] = useState(<AddEvent isAdmin={props.isAdmin}/>);
 
     useEffect(() => {}, [props.isAdmin]);  // Re-render on props.isAdmin change
 

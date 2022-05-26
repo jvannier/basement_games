@@ -32,11 +32,12 @@ function AddEvent(props) {
     useEffect(() => {}, [props.isAdmin]);  // Re-render on props.isAdmin change
 
     function submit(event) {
+        console.log("submit", props)
         event.preventDefault();
 
         if (props.isAdmin === true) {
             // Convert date to UTC before putting in Database
-            const eventDateUTC = convertDateToUTC(eventDate);
+            const eventDateUTC = convertDateToUTC(eventDate).getTime();
 
             // Make API call to create event
             make_api_call(`events/`, "POST", {

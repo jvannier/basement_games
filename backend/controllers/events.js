@@ -33,13 +33,26 @@ module.exports = (client) => {
 
     router.post('/', async (req, res) => {
         console.log("post to events?")
-        console.log(req.query);
         console.log(req.body);
-        let err = await detect_sql_injection(req.query, res);
+        let err = await detect_sql_injection(req.body, res);
         if (err !== undefined) {
             return;
         }
-        // let query = "INSERT INTO events () VALUES ();"
+        let query = `
+            INSERT INTO events (
+                name, date, mtg_set, max_people,
+                entry_cost, event_type, extra_details,
+            ) VALUES (
+                '${req.body.name}',
+                to_timestamp(${req.body.date})
+                '${req.body.mtg_set}',
+                '${req.body.max_people}',
+                '${req.body.entry_cost}',
+                '${req.body.event_type}',
+                '${req.body.extra_details}',
+            );
+        `
+        console.log(query)
         // await run_query(client, query, res);
     });
     
