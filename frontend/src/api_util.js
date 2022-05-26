@@ -24,12 +24,12 @@ const make_api_call = async (endpoint, method = "GET", data = {}) => {
     }
 }
 
-const is_logged_in_admin = async (userID) => {
-    if (userID === undefined) {
+const is_logged_in_admin = async (userID, token) => {
+    if (userID === undefined || userID === null) {
         return false;
     }
 
-    const data = await make_api_call(`users/is_admin/?id=${userID}`)
+    const data = await make_api_call(`users/is_admin/?userID=${userID}&token=${token}`)
     // if not logged or not an admin, then return false
     return Boolean(data.is_admin && data.logged_in);
 }

@@ -37,7 +37,7 @@ function AddEvent(props) {
             const eventDateUTC = convertDateToUTC(eventDate);
 
             // Make API call to create event
-            make_api_call(`events/`, "POST", {
+            make_api_call(`events?token=${props.token}`, "POST", {
                 entryCost, extraDetails, eventDateUTC,
                 eventName, eventType, maxPeople, magicSet,
             });

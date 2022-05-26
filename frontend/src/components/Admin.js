@@ -9,7 +9,7 @@ function Admin(props) {
     let [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
-        is_logged_in_admin(props.userID).then(result => {
+        is_logged_in_admin(props.userID, props.token).then(result => {
             setIsAdmin(result);
         });
 

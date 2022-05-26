@@ -16,6 +16,7 @@ function Login(props) {
         props.setUserID();
         props.setUserName();
         localStorage.removeItem('id');
+        localStorage.removeItem('token');
 
         if (props.userID !== undefined) {
             // Update login_expiration_time in DB
@@ -24,6 +25,8 @@ function Login(props) {
                 "PATCH",
             ); 
         }
+
+        // TODO: Consider deleting the login token from the DB, too?
     }
 
     useEffect(() => {
@@ -31,7 +34,9 @@ function Login(props) {
         if (props.userID !== null && props.userID !== undefined) {
             // Check if the login has expired
             async function fetchUserData() {
-                const data = await make_api_call(`users/logged_in?id=${props.userID}`);
+                const data = await make_api_call(
+                    `users/logged_in?userID=${props.userID}&token=${props.token}`
+                );
                 if ("result" in data) {
                     if (data["result"] === true) {
                         login(props.userID, data["name"]);
@@ -47,7 +52,7 @@ function Login(props) {
         } else {
             logout();
         }
-      }, [props.userID]);
+      }, [props.token]);
 
     if (props.userID === undefined) {
         // Login
@@ -59,8 +64,9 @@ function Login(props) {
                     login(
                         userID,
                         responsePayload.given_name,
-                    );
+                    );  // TODO: This function split could be cleaner
 
+                    console.log(responsePayload);
                     // Update login_expiration_time in DB
                     let query_params = (
                         `id=${userID}`
@@ -69,7 +75,11 @@ function Login(props) {
                         + `&email=${responsePayload.email}`
                         + `&login_expiration_time=${responsePayload.exp}`
                     );
-                    make_api_call(`users/login?${query_params}`, "PATCH"); 
+                    make_api_call(`users/login?${query_params}`, "PATCH").then(result => {
+                        // Store token in localStorage
+                        localStorage.setItem('token', result.token);
+                        props.setToken(result.token);
+                    });
                 }}
                 onError={(err) => {
                     console.log('Login Failed', err);

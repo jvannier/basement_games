@@ -11,23 +11,28 @@ import { is_logged_in_admin } from "./api_util";
 function App() {
   let [userID, setUserID] = useState(localStorage.getItem("id"));
   let [userName, setUserName] = useState();
+  let [token, setToken] = useState(localStorage.getItem("token"));
+
   let [adminPageLink, setAdminPageLink] = useState("");
 
   // TODO: vuln: if user is logged in and another person puts their id in localStorage it'll turn up logged in as it is
-  //    IDEA: also put where logged in FROM and check that?
   useEffect(() => {
-    is_logged_in_admin(userID).then(result => {
+    is_logged_in_admin(userID, token).then(result => {
       if (result === true) {
         setAdminPageLink(
           <Route exact path="/admin" element={
-            <Admin userID={userID} />
+            <Admin userID={userID} token={token} />
           }/>
         );
       } else {
         setAdminPageLink("");
       }
     });
-  }, [userID]);
+  }, [token]);
+
+  useEffect(() => {
+    console.log("AA:", token);
+  });
 
   // TODO: SuspenseAPI stuff (+lazy loading)
   return (
@@ -36,6 +41,7 @@ function App() {
         <NavBar
           userID={userID} setUserID={setUserID}
           userName={userName} setUserName={setUserName}
+          token={token} setToken={setToken}
         />
         <Routes>
           <Route exact path="/" element={

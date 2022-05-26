@@ -10,7 +10,7 @@ function NavBar(props) {
 
   useEffect(() => {
     if (props.userID !== undefined) {
-      is_logged_in_admin(props.userID).then(result => {
+      is_logged_in_admin(props.userID, props.token).then(result => {
         if (result === true) {
           setAdminPageLink(<Link to="/admin">Admin</Link>);
         } else {
@@ -20,7 +20,7 @@ function NavBar(props) {
     } else {
       setAdminPageLink("");
     }
-  }, [props.userID]);
+  }, [props.token]);
 
   return (
     <span className="NavBar">
@@ -28,7 +28,11 @@ function NavBar(props) {
       <Link to="/about">About</Link>
       {adminPageLink}
       {props.userName}
-      <Login userID={props.userID} setUserID={props.setUserID} setUserName={props.setUserName}/>
+      <Login
+        userID={props.userID} setUserID={props.setUserID}
+        setUserName={props.setUserName}
+        token={props.token} setToken={props.setToken}
+      />
     </span>
   );
 }
