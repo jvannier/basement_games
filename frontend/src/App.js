@@ -15,7 +15,6 @@ function App() {
 
   let [adminPageLink, setAdminPageLink] = useState("");
 
-  // TODO: vuln: if user is logged in and another person puts their id in localStorage it'll turn up logged in as it is
   useEffect(() => {
     is_logged_in_admin(userID, token).then(result => {
       if (result === true) {
@@ -31,7 +30,7 @@ function App() {
   }, [token]);
 
   useEffect(() => {
-    console.log("AA:", token);
+    console.log("State:", token);
   });
 
   // TODO: SuspenseAPI stuff (+lazy loading)

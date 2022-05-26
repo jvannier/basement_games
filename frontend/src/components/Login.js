@@ -5,28 +5,21 @@ import { make_api_call } from "../api_util";
 
 
 function Login(props) {
-    function login(id, name) {
-        props.setUserName(name);
-        props.setUserID(id);  // The unique ID of the user's Google Account
-        localStorage.setItem('id', id);
-    }
-    
     function logout() {
+        if (props.userID !== undefined && props.userID !== null) {
+            // Delete login token in DB
+            make_api_call(
+                `users/logout?userID=${props.userID}&token=${props.token}`,
+                "DELETE",
+            );
+        }
+
         googleLogout();
         props.setUserID();
         props.setUserName();
+        props.setToken();
         localStorage.removeItem('id');
         localStorage.removeItem('token');
-
-        if (props.userID !== undefined) {
-            // Update login_expiration_time in DB
-            make_api_call(
-                `users/login?id=${props.userID}&login_expiration_time=0`,
-                "PATCH",
-            ); 
-        }
-
-        // TODO: Consider deleting the login token from the DB, too?
     }
 
     useEffect(() => {
@@ -39,7 +32,7 @@ function Login(props) {
                 );
                 if ("result" in data) {
                     if (data["result"] === true) {
-                        login(props.userID, data["name"]);
+                        props.setUserName(data["name"]);
                     } else {
                         logout();  // Login expired
                     }
@@ -61,12 +54,10 @@ function Login(props) {
                 onSuccess={credentialResponse => {
                     const responsePayload = jwt_decode(credentialResponse.credential);
                     const userID = responsePayload.sub;  // The unique ID of the user's Google Account
-                    login(
-                        userID,
-                        responsePayload.given_name,
-                    );  // TODO: This function split could be cleaner
+                    props.setUserName(responsePayload.given_name);
+                    props.setUserID(userID);  // The unique ID of the user's Google Account
+                    localStorage.setItem('id', userID);
 
-                    console.log(responsePayload);
                     // Update login_expiration_time in DB
                     let query_params = (
                         `id=${userID}`

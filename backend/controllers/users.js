@@ -70,10 +70,6 @@ module.exports = (client) => {
             return;
         }
 
-        if (req.query.id === undefined) {
-            console("why dis happen? creating an undefined user");
-        }
-
         // Create user if it does not exist, otherwise update last_login
         let query = `
             INSERT INTO users (
@@ -86,19 +82,25 @@ module.exports = (client) => {
             ) ON CONFLICT (google_id) DO UPDATE SET
                 last_login = to_timestamp(${Math.floor(new Date().getTime() / 1000)});
         `;
-        let query_result;
         err, query_result = await client.query(query);
         if (err) {
             return res.status(400).json(err);
         }
 
-        // If logging out (login_expiration_time === 0) then return without generating a token
-        if (req.query.login_expiration_time === 0) {
-            return res.status(200).json({token: ""});
-        }
-
         // No error, store token in the users_login_tokens table and return it
         generate_and_store_token(req, res);
+    });
+
+
+    router.delete('/logout', async (req, res) => {
+        // Delete login token for user
+        let err = await detect_sql_injection(req.query, res);
+        if (err !== undefined) {
+            return;
+        }
+
+        delete_token(req.query.userID, req.query.token);
+        return res.status(200);
     });
 
     function login_has_not_expired (login_expiration_time) {
@@ -108,6 +110,16 @@ module.exports = (client) => {
         );
         let now = parseInt(new Date().getTime());
         return Boolean(now < expiration_date);  // Before login expires
+    }
+
+    function delete_token(userID, token) {
+        // Delete the expired token from the DB
+        query = `
+            DELETE
+            FROM users_login_tokens
+            WHERE user_id='${userID}' AND token='${token}';
+        `;
+        client.query(query);  // fine asynchronous
     }
 
     async function is_valid_token (userID, token) {
@@ -125,21 +137,39 @@ module.exports = (client) => {
         if (err) {
             return res.status(400).json(err);
         } else if (query_result.rows.length === 1) {
-            has_not_expired = login_has_not_expired(
+            let has_not_expired = login_has_not_expired(
                 query_result.rows[0].login_expiration_time
             );
 
             if (has_not_expired === false) {
-                // Delete the token from the DB
-                // DELETE FROM table_name WHERE condition;
-
-                // TODO
+                delete_token(userID, token);
             }
 
             return has_not_expired;
         } else {
             return false;  // No (user, token) match in DB
         }
+    }
+
+    async function delete_expired_tokens(userID) {
+        // Delete expired tokens for the given user
+        let query = `
+            SELECT token, login_expiration_time
+            FROM users_login_tokens
+            WHERE user_id='${userID}';
+        `;
+        let _, query_result = await client.query(query);
+
+        query_result.rows.map(row => {
+            // If the token is expired delete it
+            has_not_expired = login_has_not_expired(
+                row.login_expiration_time
+            );
+
+            if (has_not_expired === false) {
+                delete_token(userID, row.token);
+            }
+        });
     }
 
     router.get('/logged_in', async (req, res) => {
@@ -166,7 +196,8 @@ module.exports = (client) => {
             return res.status(400).json(err);
         }
 
-        // TODO: Lookup all tokens for this user and delete expired ones
+        // Lookup all tokens for this user and delete expired ones
+        await delete_expired_tokens(req.query.userID);
 
         res.status(200).json({
             name: query_result.rows[0].first_name,
