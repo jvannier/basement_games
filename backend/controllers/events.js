@@ -1,10 +1,10 @@
-const router = require('express').Router()
-const { detect_sql_injection, run_query } = require("../run_query_util")
+const router = require('express').Router();
+const { detect_sql_injection, run_query } = require('../run_query_util');
+const is_valid_token = require('./users').is_valid_token;
 
 
-module.exports = (client) => {
-
-// TODO: Future: prizing (?) 
+module.exports.endpoints = (client) => {    
+    // TODO: Future: prizing (?) 
 // for brett: how much each pack costs? -> LATER / DIFF TABLE?
 
 //    junction table of users to events they're signed up for :D and if they've paid for that event
@@ -27,7 +27,7 @@ module.exports = (client) => {
     });
 
     router.get('/', async (req, res) => {
-        let query = "SELECT * from events;"
+        let query = "SELECT * FROM events;"
         await run_query(client, query, res);
     });
 
@@ -41,8 +41,11 @@ module.exports = (client) => {
             return err;
         }
 
-        // TODO: make sure it's an admin before actually createing
-        // req.query.userID + req.query.token
+        // Make sure logged in admin
+        const is_valid = await is_valid_token(req.query.userID, req.query.token);
+        if (is_valid !== true) {
+            res.status(400);
+        }
 
         let query = `
             INSERT INTO events (
@@ -50,7 +53,7 @@ module.exports = (client) => {
                 entry_cost, event_type, extra_details
             ) VALUES (
                 '${req.body.eventName}',
-                to_timestamp(${req.body.eventDateUTC}),
+                to_timestamp(${req.body.eventDateAsInt}),
                 '${req.body.magicSet}',
                 '${req.body.maxPeople}',
                 '${req.body.entryCost}',
@@ -67,12 +70,18 @@ module.exports = (client) => {
             return err;
         }
 
-        // TODO: make sure it's an admin before actually deleting
+        // Make sure logged in admin
+        const is_valid = await is_valid_token(req.query.userID, req.query.token);
+        if (is_valid !== true) {
+            res.status(400);
+        } 
+
         let query = `
             DELETE
             FROM events
             WHERE id=${req.query.eventID}
         `;
+        await run_query(client, query, res);
     })
 
     return router;

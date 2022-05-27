@@ -8,18 +8,6 @@ import { make_api_call } from "../api_util";
 import DateTimePicker from 'react-datetime-picker';
 
 
-function convertDateToUTC(date) {
-    return new Date(
-        date.getUTCFullYear(),
-        date.getUTCMonth(),
-        date.getUTCDate(),
-        date.getUTCHours(),
-        date.getUTCMinutes(),
-        date.getUTCSeconds(),
-    );
-}
-
-
 function AddEvent(props) {
     const [entryCost, setEntryCost] = useState();
     const [extraDetails, setExtraDetails] = useState();
@@ -35,13 +23,11 @@ function AddEvent(props) {
         event.preventDefault();
 
         if (props.isAdmin === true) {
-            // Convert date to UTC before putting in Database
-            const eventDateUTC = convertDateToUTC(eventDate).getTime();
+            const eventDateAsInt = Date.parse(eventDate);
 
             // Make API call to create event
             make_api_call(`events/?userID=${props.userID}&token=${props.token}`, "POST", {
-            // make_api_call(`events/`, "POST", {
-                entryCost, extraDetails, eventDateUTC,
+                entryCost, extraDetails, eventDateAsInt,
                 eventName, eventType, maxPeople, magicSet,
             });
 

@@ -18,10 +18,10 @@ const client = new Client({
 client.connect();
 
 // Endpoints
-const usersController = require('./controllers/users')(client)
+const usersController = require('./controllers/users').endpoints(client)
 app.use('/users/', usersController)
 
-const eventsController = require('./controllers/events')(client)
+const eventsController = require('./controllers/events').endpoints(client)
 app.use('/events/', eventsController)
 
 // Admin pages to view signed up users and add / edit events

@@ -1,5 +1,5 @@
 module.exports.run_query = async (client, query, res) => {
-    let err, query_result = await client.query(query)
+    let err, query_result = await client.query(query);
     if (err) {
         return res.status(400).json(err);
     } else {
