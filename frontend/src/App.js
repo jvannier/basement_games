@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import About from "./components/About";
 import Admin from "./components/Admin";
 import Events from "./components/Events";
 import NavBar from "./components/NavBar";
 import './App.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { is_logged_in_admin } from "./api_util";
 
 
@@ -14,6 +14,9 @@ function App() {
   let [token, setToken] = useState(localStorage.getItem("token"));
   let [isAdmin, setIsAdmin] = useState(false);
 
+  // Store events att App level so they're available everywhere:
+  let [events, setEvents] = useState([]);
+
   let [adminPageLink, setAdminPageLink] = useState("");
 
   useEffect(() => {
@@ -21,7 +24,12 @@ function App() {
       if (result === true) {
         setAdminPageLink(
           <Route exact path="/admin" element={
-            <Admin userID={userID} token={token} isAdmin={isAdmin} />
+            <Admin
+              userID={userID}
+              token={token}
+              isAdmin={isAdmin}
+              events={events}
+            />
           }/>
         );
       } else {
@@ -32,6 +40,7 @@ function App() {
   }, [token, isAdmin]);
 
   // TODO: SuspenseAPI stuff (+lazy loading)
+  // TODO: Make it so can refresh on route (i.e. /admin or /about) and have it still work
   return (
     <div className="App">
       <BrowserRouter>
@@ -42,7 +51,7 @@ function App() {
         />
         <Routes>
           <Route exact path="/" element={
-            <Events/>
+            <Events events={events} setEvents={setEvents}/>
           }/>
           <Route exact path="/about" element={
             <About userID={userID} />

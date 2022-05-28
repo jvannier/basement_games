@@ -1,0 +1,7 @@
+[role=grid] {
+    border-color: black;
+}
+
+[role=gridcell], [role=columnheader] {
+    background-color: gray !important;
+}

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { is_logged_in_admin, make_api_call } from "../api_util";
 import AddEvent from "./AddEvent";
+import EditEvents from "./EditEvents";
+import Users from "./Users";
 
 
 function Admin(props) {
-    // let [events, setEvents] = useState("NO EVENTS");
     let [page, setPage] = useState(
         <AddEvent
             userID={props.userID}
@@ -38,15 +38,24 @@ function Admin(props) {
             }}>Add Event</button>
 
             <button onClick={() => {
-                setPage(<div>TODO
-                    seeing who has signed up, checkbox for who has paid(?)
+                setPage(
+                    <EditEvents events={props.events}/>
+                // <div>TODO
+                    // {/* seeing who has signed up, checkbox for who has paid(?), delete button */}
 
-                    {/* {JSON.stringify(events)} */}
-                </div>);
-            }}>Edit Event</button>
+                    // {/* {JSON.stringify(events)} */}
+                // </div>
+                );
+            }}>Edit Events</button>
 
             <button onClick={() => {
-                setPage(<div>TODO</div>);
+                setPage(
+                    <Users
+                        userID={props.userID}
+                        token={props.token}
+                        isAdmin={props.isAdmin}
+                    />
+                );
             }}>View Users</button>
 
             {page}

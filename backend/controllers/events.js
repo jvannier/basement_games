@@ -4,8 +4,7 @@ const is_valid_token = require('./users').is_valid_token;
 
 
 module.exports.endpoints = (client) => {    
-    // TODO: Future: prizing (?) 
-// for brett: how much each pack costs? -> LATER / DIFF TABLE?
+// TODO: FUTURE: for brett: how much each pack costs? -> LATER / DIFF TABLE? ??? Maybe?
 
 //    junction table of users to events they're signed up for :D and if they've paid for that event
 
@@ -53,7 +52,7 @@ module.exports.endpoints = (client) => {
                 entry_cost, event_type, extra_details
             ) VALUES (
                 '${req.body.eventName}',
-                to_timestamp(${req.body.eventDateAsInt}),
+                '${new Date(req.body.eventDateAsInt).toUTCString()}',
                 '${req.body.magicSet}',
                 '${req.body.maxPeople}',
                 '${req.body.entryCost}',

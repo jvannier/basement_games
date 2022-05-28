@@ -10,7 +10,7 @@ module.exports.run_query = async (client, query, res) => {
 
 module.exports.detect_sql_injection = async (query_params, res) => {
     // TODO: Support for other languages/characters?
-    alphanumerical_regex = /^[\w@.\d]+$/;
+    alphanumerical_regex = /^[\w@. \d]+$/;
 
     // Iterate over all query params and validate them
     for (let query_param in query_params) {
