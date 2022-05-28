@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { detect_sql_injection, run_query } = require('../run_query_util');
-const is_valid_token = require('./users').is_valid_token;
+const { is_valid_token } = require("./tokens");
 
 
 module.exports.endpoints = (client) => {    
