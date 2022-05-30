@@ -4,11 +4,9 @@ import About from "./components/About";
 import Admin from "./components/Admin";
 import Events from "./components/Events";
 import NavBar from "./components/NavBar";
-import './App.css';
 import { is_logged_in_admin } from "./apiUtil";
-import { make_api_call } from "./apiUtil";
-import DeleteEvent from "./components/DeleteEvent";
 import { get_events } from "./components/eventsUtil";
+import './App.css';
 
 
 function App() {
@@ -51,12 +49,11 @@ function App() {
     get_events(
       userID,
       token,
-      events,
       setEvents,
       refreshEvents,
       setRefreshEvents,
     );
-  }, [refreshEvents]);
+  }, [userID, token, refreshEvents]);
 
   // TODO: SuspenseAPI stuff (+lazy loading)
   // TODO: Make it so can refresh on route (i.e. /admin or /about) and have it still work

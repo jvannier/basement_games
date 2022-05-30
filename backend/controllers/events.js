@@ -33,9 +33,13 @@ module.exports.endpoints = (client) => {
                 signup_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 event_id int NOT NULL,
 
-                // TODO: user_id and event_id are foreign keys
-                // user_id to users.google_id,
-                // event_id to events.id
+                CONSTRAINT fk_user_id
+                    FOREIGN KEY(user_id) 
+                    REFERENCES users(google_id),
+
+                CONSTRAINT fk_event_id
+                    FOREIGN KEY(event_id) 
+                    REFERENCES events(id)
             );
         `;
         await run_query(client, query, res);
@@ -103,6 +107,11 @@ module.exports.endpoints = (client) => {
         await run_query(client, query, res);
     })
 
+    router.get('/event_sign_ups', async (req, res) => {
+        query = `SELECT user_id, event_id FROM users_events;`;
+        await run_query(client, query, res);
+    });
+
     router.post('/join', async (req, res) => {
         let err = await detect_sql_injection(req.query, res);
         if (err !== undefined) {
@@ -120,17 +129,87 @@ module.exports.endpoints = (client) => {
             });
         }
 
-        // TODO: Need to make users_events table
+        // Check if already signed up for this event (if yes, return 400)
         let query = `
+            SELECT user_id, event_id
+            FROM users_events
+            WHERE
+                user_id='${req.query.userID}' AND
+                event_id=${req.query.eventID}
+            ;
+        `;
+        err, query_result = await client.query(query);
+        if (err) {
+            return res.status(400).json(err);
+        } else if (query_result.rows.length > 0) {
+            return res.status(400).json({
+                "error": "User is already signed up for event",
+            });
+        }
+
+        // Check if event is full (if yes, return 400)
+        query = `
+            SELECT user_id
+            FROM users_events
+            WHERE event_id=${req.query.eventID};
+        `;
+        err, query_result = await client.query(query);
+        if (err) {
+            return res.status(400).json(err);
+        } else {
+            signed_up_for_event = query_result.rows.length;
+            query = `
+                SELECT max_people
+                FROM events
+                WHERE id=${req.query.eventID};
+            `;
+            err, query_result = await client.query(query);
+            if (err || query_result.rows.length !== 1) {
+                return res.status(400).json(err);
+            } else if (signed_up_for_event >= query_result.rows[0].max_people) {
+                return res.status(400).json({
+                    "error": "Event is full",
+                });
+            }
+        }
+
+        // Sign user up for event
+        query = `
             INSERT INTO users_events (
                 user_id, event_id
             ) VALUES (
                 '${req.query.userID}',
-                '${req.query.eventID}',
+                '${req.query.eventID}'
             );
         `;
-        console.log(query);
-        // await run_query(client, query, res);
+        await run_query(client, query, res);
+    });
+
+    router.post('/leave', async (req, res) => {
+        let err = await detect_sql_injection(req.query, res);
+        if (err !== undefined) {
+            return err;
+        }
+
+        // Check that token is valid
+        const result = await is_valid_token(
+            client, req.query.userID, req.query.token,
+        );
+        if (result !== true) {
+            res.status(401).json({
+                // Expired or invalid login
+                result: "You need to be logged in to leave an event.",
+            });
+        }
+
+        // Remove user from event
+        query = `
+            DELETE FROM users_events 
+            WHERE
+                user_id='${req.query.userID}' AND
+                event_id=${req.query.eventID};
+        `;
+        await run_query(client, query, res);
     });
     
     return router;

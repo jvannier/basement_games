@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import AddEvent from "./AddEvent";
-// import EditEvents from "./EditEvents";
 import Users from "./Users";
 
 
