@@ -10,7 +10,7 @@ const EVENT_COLUMNS = [
     { key: "entry_cost", name: "Entry Cost" },
     { key: "extra_details", name: "Details" },
     { key: "join", name: "Join" },
-//     {/* TODO Add column for signed up players -> will need to get from DB from junction table */}
+    { key: "players", name: "Players" },
 ];
 
 export { API_URL, CLIENT_ID, EVENT_COLUMNS };

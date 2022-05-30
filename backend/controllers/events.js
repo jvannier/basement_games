@@ -99,7 +99,18 @@ module.exports.endpoints = (client) => {
             return result;
         }
 
+        // Delete from signups for event from users_events
         let query = `
+            DELETE
+            FROM users_events
+            WHERE event_id=${req.query.eventID};
+        `;
+        err, _ = await client.query(query);
+        if (err) {
+            return res.status(400).json(err);
+        }
+
+        query = `
             DELETE
             FROM events
             WHERE id=${req.query.eventID};

@@ -54,6 +54,12 @@ module.exports.endpoints = (client) => {
         await run_query(client, query, res);
     });
 
+    router.get('/names', async (req, res) => {
+        // Get ids to user names
+        let query = `SELECT google_id, first_name, last_name FROM users;`;
+        await run_query(client, query, res);
+    });
+
     router.patch('/login', async (req, res) => {
         // Create user if does not exist, otherwise update last_login.
         //  Also create and store login token and login_expiration_time.

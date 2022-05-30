@@ -11,13 +11,14 @@ function Events(props) {
         if (props.isAdmin) {
             setAdminInfo([
                 { key: "delete", name: "Delete" },
+                { key: "id", name: "Event ID" },
             ]);
         } else {
             setAdminInfo([]);
         }
     }, [props.events, props.isAdmin, props.userID]);
 
-    // TODO: Show players registered, join button
+    // TODO: Show players registered
     return (
         <DataGrid rows={props.events} columns={
             EVENT_COLUMNS.concat(adminInfo)

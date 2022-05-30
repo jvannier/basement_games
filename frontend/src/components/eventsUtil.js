@@ -1,3 +1,4 @@
+import Select from 'react-select';
 import { make_api_call } from "../apiUtil";
 import DeleteEvent from "./DeleteEvent";
 import JoinEvent from "./JoinEvent";
@@ -18,24 +19,46 @@ async function get_events(
         if (event_signups[sign_up["event_id"]] === undefined) {
             event_signups[sign_up["event_id"]] = [sign_up["user_id"]];
         } else {
-            event_signups[sign_up["event_id"]].push([sign_up["user_id"]]);
+            event_signups[sign_up["event_id"]].push(sign_up["user_id"]);
         }
+    });
+
+    // Get users' names based on google_id
+    let users_db_call = await make_api_call('users/names');
+    let user_id_to_name = {};
+    users_db_call.forEach(user => {
+        user_id_to_name[user["google_id"]] = (
+            user["first_name"] + " " + user["last_name"]
+        );
     });
 
     let data = await make_api_call(`events/`);
     data = data.map(event => {
-        // TODO: will need to convert dates from UTC (in DB) to user's timezone
-        // TODO: Add dropdown with list of names of signed up people? Should this be admin only?
+        // Convert date from UTC (in DB) to user's timezone
+        event["date"] = new Date(event["date"]).toString();
 
         // Get people signed up for THIS event
         let signed_up_people = (
             event_signups[event["id"]] !== undefined ? event_signups[event["id"]] : []
-        ); 
-        
+        );
+
+        // Show people signed up for this event
+        let players = signed_up_people.map(
+            player => user_id_to_name[player]
+        );
+        event["players"] = (
+            <select name="players" id="players">
+                {
+                    players.map(player =>
+                        <option value={player}>{player}</option>
+                    )
+                }
+            </select>
+        );
+
         event["max_people"] = `${signed_up_people.length}/${event["max_people"]}`;
         event["entry_cost"] = `$${event["entry_cost"]}`;  // Add $ to cost
 
-        // TODO: rename "Join" column so it's clearer it's both join and leave?
         // If user is signed up for event show "Leave" button instead of "Join"
         if (signed_up_people.includes(userID)) {
             // Add Leave Button
