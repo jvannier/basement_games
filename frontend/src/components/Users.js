@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DataGrid from 'react-data-grid';
-import { make_api_call } from "../api_util";
+import { make_api_call } from "../apiUtil";
 import './Grid.css';
 
 

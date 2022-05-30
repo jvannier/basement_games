@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AddEvent from "./AddEvent";
-import EditEvents from "./EditEvents";
+// import EditEvents from "./EditEvents";
 import Users from "./Users";
 
 
@@ -13,8 +13,6 @@ function Admin(props) {
         />
     );
 
-    useEffect(() => {}, [props.isAdmin]);  // Re-render on props.isAdmin change
-
     if (props.isAdmin !== true) {  // If not admin refuse to render
         return (
             <div>
@@ -25,7 +23,7 @@ function Admin(props) {
 
     return (
         <div>
-            <p>TODO: SUPER SECRET ADMIN STUFF</p>
+            <p>SUPER SECRET ADMIN STUFF</p>
 
             <button onClick={() => {
                 setPage(
@@ -36,17 +34,6 @@ function Admin(props) {
                     />
                 );
             }}>Add Event</button>
-
-            <button onClick={() => {
-                setPage(
-                    <EditEvents events={props.events}/>
-                // <div>TODO
-                    // {/* seeing who has signed up, checkbox for who has paid(?), delete button */}
-
-                    // {/* {JSON.stringify(events)} */}
-                // </div>
-                );
-            }}>Edit Events</button>
 
             <button onClick={() => {
                 setPage(

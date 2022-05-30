@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import './AddEvent.css';
-import { make_api_call } from "../api_util";
+import { make_api_call } from "../apiUtil";
 // import DatePicker from 'react-date-picker';
 // import DatePicker from 'react-date-picker/dist/entry.nostyle';
 // import TimePicker from 'react-time-picker';

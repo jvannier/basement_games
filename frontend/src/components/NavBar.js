@@ -2,7 +2,7 @@ import './NavBar.css';
 import Login from "./Login";
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react';
-import { is_logged_in_admin } from "../api_util"
+import { is_logged_in_admin } from "../apiUtil"
 
 
 function NavBar(props) {

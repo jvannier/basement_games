@@ -1,7 +1,7 @@
 import jwt_decode from "jwt-decode";
 import { GoogleLogin, googleLogout } from '@react-oauth/google';
 import React, { useEffect } from "react";
-import { make_api_call } from "../api_util";
+import { make_api_call } from "../apiUtil";
 
 
 function Login(props) {

@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { detect_sql_injection, run_query } = require('../run_query_util');
+const { is_valid_logged_in_admin } = require("./util");
 const { is_valid_token } = require("./tokens");
 
 
@@ -25,6 +26,21 @@ module.exports.endpoints = (client) => {
         await run_query(client, query, res);
     });
 
+    router.post('/create_users_events_table', async (req, res) => {
+        let query = `
+            CREATE TABLE users_events (
+                user_id VARCHAR(255) NOT NULL,
+                signup_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                event_id int NOT NULL,
+
+                // TODO: user_id and event_id are foreign keys
+                // user_id to users.google_id,
+                // event_id to events.id
+            );
+        `;
+        await run_query(client, query, res);
+    });
+
     router.get('/', async (req, res) => {
         let query = "SELECT * FROM events;"
         await run_query(client, query, res);
@@ -40,10 +56,12 @@ module.exports.endpoints = (client) => {
             return err;
         }
 
-        // Make sure logged in admin
-        const is_valid = await is_valid_token(req.query.userID, req.query.token);
-        if (is_valid !== true) {
-            res.status(400);
+        // Check that token is valid and the user is an admin
+        const result = await is_valid_logged_in_admin(
+            client, req.query.userID, req.query.token, res,
+        );
+        if (result !== true) {
+            return result;
         }
 
         let query = `
@@ -69,19 +87,51 @@ module.exports.endpoints = (client) => {
             return err;
         }
 
-        // Make sure logged in admin
-        const is_valid = await is_valid_token(req.query.userID, req.query.token);
-        if (is_valid !== true) {
-            res.status(400);
-        } 
+        // Check that token is valid and the user is an admin
+        const result = await is_valid_logged_in_admin(
+            client, req.query.userID, req.query.token, res,
+        );
+        if (result !== true) {
+            return result;
+        }
 
         let query = `
             DELETE
             FROM events
-            WHERE id=${req.query.eventID}
+            WHERE id=${req.query.eventID};
         `;
         await run_query(client, query, res);
     })
 
+    router.post('/join', async (req, res) => {
+        let err = await detect_sql_injection(req.query, res);
+        if (err !== undefined) {
+            return err;
+        }
+
+        // Check that token is valid
+        const result = await is_valid_token(
+            client, req.query.userID, req.query.token,
+        );
+        if (result !== true) {
+            res.status(401).json({
+                // Expired or invalid login
+                result: "You need to be logged in to join an event.",
+            });
+        }
+
+        // TODO: Need to make users_events table
+        let query = `
+            INSERT INTO users_events (
+                user_id, event_id
+            ) VALUES (
+                '${req.query.userID}',
+                '${req.query.eventID}',
+            );
+        `;
+        console.log(query);
+        // await run_query(client, query, res);
+    });
+    
     return router;
 }

@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const { detect_sql_injection, run_query } = require("../run_query_util")
 const { delete_expired_tokens, generate_and_store_token, delete_token, is_valid_token } = require("./tokens");
+const { is_user_admin, is_valid_logged_in_admin } = require("./util");
 
 
 module.exports.endpoints = (client) => {
@@ -42,14 +43,11 @@ module.exports.endpoints = (client) => {
         }
 
         // Check that token is valid and the user is an admin
-        let result = await is_valid_token(client, req.query.userID, req.query.token);
-        let is_admin = await is_user_admin(req.query.userID, res);
-        if (result === false || is_admin !== true) {
-            return res.status(200).json({
-                result: "You're not a logged in admin. D:",  // Expired login
-            });
-        } else if (result !== true) {
-            return result;  // Error occurred
+        const result = await is_valid_logged_in_admin(
+            client, req.query.userID, req.query.token, res,
+        );
+        if (result !== true) {
+            return result;
         }
 
         let query = `SELECT * FROM users;`;
@@ -129,21 +127,6 @@ module.exports.endpoints = (client) => {
         });
     });
 
-    async function is_user_admin(userID, res) {
-        // Return if the supplied user is an admin
-        let query = `
-            SELECT is_admin
-            FROM users
-            WHERE google_id='${userID}';
-        `;
-        let err, query_result = await client.query(query);
-        if (err || query_result.rows.length != 1) {
-            return res.status(400).json(err);
-        }
-
-        return query_result.rows[0].is_admin;
-    }
-
     router.get('/is_admin', async(req, res) => {
         // Return if the supplied user is an admin and the login hasn't expired
         let err = await detect_sql_injection(req.query, res);
@@ -162,7 +145,7 @@ module.exports.endpoints = (client) => {
             return logged_in;  // Error occurred
         }
 
-        let is_admin = await is_user_admin(req.query.userID, res);
+        let is_admin = await is_user_admin(client, req.query.userID, res);
         res.status(200).json({is_admin, logged_in});
     });
 

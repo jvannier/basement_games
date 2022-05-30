@@ -5,7 +5,10 @@ import Admin from "./components/Admin";
 import Events from "./components/Events";
 import NavBar from "./components/NavBar";
 import './App.css';
-import { is_logged_in_admin } from "./api_util";
+import { is_logged_in_admin } from "./apiUtil";
+import { make_api_call } from "./apiUtil";
+import DeleteEvent from "./components/DeleteEvent";
+import { get_events } from "./components/eventsUtil";
 
 
 function App() {
@@ -16,6 +19,7 @@ function App() {
 
   // Store events att App level so they're available everywhere:
   let [events, setEvents] = useState([]);
+  let [refreshEvents, setRefreshEvents] = useState(false);  // change flag to force refresh events
 
   let [adminPageLink, setAdminPageLink] = useState("");
 
@@ -29,6 +33,9 @@ function App() {
               token={token}
               isAdmin={isAdmin}
               events={events}
+              setEvents={setEvents}
+              refreshEvents={refreshEvents}
+              setRefreshEvents={setRefreshEvents}
             />
           }/>
         );
@@ -38,6 +45,18 @@ function App() {
       setIsAdmin(result);
     });
   }, [token, isAdmin]);
+
+  useEffect(() => {
+    // Get events here so avail everywhere
+    get_events(
+      userID,
+      token,
+      events,
+      setEvents,
+      refreshEvents,
+      setRefreshEvents,
+    );
+  }, [refreshEvents]);
 
   // TODO: SuspenseAPI stuff (+lazy loading)
   // TODO: Make it so can refresh on route (i.e. /admin or /about) and have it still work
@@ -51,7 +70,11 @@ function App() {
         />
         <Routes>
           <Route exact path="/" element={
-            <Events events={events} setEvents={setEvents}/>
+            <Events
+              userID={userID}
+              isAdmin={isAdmin}
+              events={events}
+            />
           }/>
           <Route exact path="/about" element={
             <About userID={userID} />
