@@ -1,4 +1,3 @@
-import Select from 'react-select';
 import { make_api_call } from "../apiUtil";
 import DeleteEvent from "./DeleteEvent";
 import JoinEvent from "./JoinEvent";
