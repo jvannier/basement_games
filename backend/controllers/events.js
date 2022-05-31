@@ -46,6 +46,7 @@ module.exports.endpoints = (client) => {
     });
 
     router.get('/', async (req, res) => {
+        // sort by date TODO
         let query = "SELECT * FROM events;"
         await run_query(client, query, res);
     });

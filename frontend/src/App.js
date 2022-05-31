@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import About from "./components/About";
 import Admin from "./components/Admin";
-import Events from "./components/Events";
+import Events from "./components/events/Events";
 import NavBar from "./components/NavBar";
 import { is_logged_in_admin } from "./apiUtil";
-import { get_events } from "./components/eventsUtil";
+import { get_events } from "./components/events/eventsUtil";
 import './App.css';
 
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import './AddEvent.css';
-import { make_api_call } from "../apiUtil";
+import { make_api_call } from "../../apiUtil";
 // import DatePicker from 'react-date-picker';
 // import DatePicker from 'react-date-picker/dist/entry.nostyle';
 // import TimePicker from 'react-time-picker';
@@ -29,7 +29,12 @@ function AddEvent(props) {
             make_api_call(`events/?userID=${props.userID}&token=${props.token}`, "POST", {
                 entryCost, extraDetails, eventDateAsInt,
                 eventName, eventType, maxPeople, magicSet,
+            }).then(res => {
+                // Refresh list of events
+                props.setRefreshEvents(!props.refreshEvents);
             });
+
+            // TODO: HAve this cause a regrab of events (refreshEvents)
 
             // TODO: success message / empty out the input boxes? -> Do we want to just NOT preventDefault?
         }

@@ -1,13 +1,13 @@
-import { make_api_call } from "../apiUtil";
+import { make_api_call } from "../../apiUtil";
 
 
-function LeaveEvent(props) {
-    async function leaveEvent(event) {
+function JoinEvent(props) {
+    async function joinEvent(event) {
         let row = event.target.parentNode.parentNode.getAttribute("aria-rowindex");
         row -= 2;  // Header row + starts at 1
     
         make_api_call(
-            `events/leave?userID=${props.userID}&token=${props.token}&eventID=${props.events[row].id}`,
+            `events/join?userID=${props.userID}&token=${props.token}&eventID=${props.events[row].id}`,
             "POST",
         ).then(res => {
             props.setRefreshEvents(!props.refreshEvents);
@@ -15,10 +15,10 @@ function LeaveEvent(props) {
     }
 
     return (
-        <button class="leave" onClick={leaveEvent} >
-            Leave
+        <button class="join" onClick={joinEvent} >
+            Join
         </button>
     );
 }
 
-export default LeaveEvent;
+export default JoinEvent;

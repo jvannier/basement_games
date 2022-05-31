@@ -1,4 +1,4 @@
-import { make_api_call } from "../apiUtil";
+import { make_api_call } from "../../apiUtil";
 import DeleteEvent from "./DeleteEvent";
 import JoinEvent from "./JoinEvent";
 import LeaveEvent from "./LeaveEvent";
@@ -70,6 +70,8 @@ async function get_events(
                     setRefreshEvents={setRefreshEvents}
                 />
             );
+        } else if (userID === undefined || token === undefined) {
+            event["join"] = "Please login";  // User is not logged in
         } else {
             // Add Join Button
             event["join"] = (
@@ -82,6 +84,11 @@ async function get_events(
                 />
             );
         }
+
+        // Add Edit Event Button
+        event["edit"] = (
+            <div>SCREAMING</div>
+        );
 
         // Add Delete Button
         event["delete"] = (

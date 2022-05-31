@@ -1,3 +1,5 @@
+const path = require('path');
+
 const { Client } = require('pg');
 const express = require("express");
 const app = express()
@@ -17,14 +19,19 @@ const client = new Client({
 
 client.connect();
 
+
+// Front-end Pages via react-router-dom
+app.get('/a*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../frontend', 'build', 'index.html'));
+});
+
+
 // Endpoints
 const usersController = require('./controllers/users').endpoints(client)
 app.use('/users/', usersController)
 
 const eventsController = require('./controllers/events').endpoints(client)
 app.use('/events/', eventsController)
-
-// TODO: junction table of users to events they're signed up for :D and if they've paid for that event
 
 
 app.listen(port, () => {});

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AddEvent from "./AddEvent";
+import AddEvent from "./events/AddEvent";
 import Users from "./Users";
 
 
@@ -9,6 +9,8 @@ function Admin(props) {
             userID={props.userID}
             token={props.token}
             isAdmin={props.isAdmin}
+            refreshEvents={props.refreshEvents}
+            setRefreshEvents={props.setRefreshEvents}
         />
     );
 
@@ -20,6 +22,7 @@ function Admin(props) {
         );
     }
 
+    // TODO: use browser router instead of buttons here (can update url then -> remember to host them in server.js then :D)
     return (
         <div>
             <p>SUPER SECRET ADMIN STUFF</p>
@@ -30,6 +33,8 @@ function Admin(props) {
                         userID={props.userID}
                         token={props.token}
                         isAdmin={props.isAdmin}
+                        refreshEvents={props.refreshEvents}
+                        setRefreshEvents={props.setRefreshEvents}
                     />
                 );
             }}>Add Event</button>

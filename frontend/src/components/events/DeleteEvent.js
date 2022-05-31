@@ -1,4 +1,4 @@
-import { make_api_call } from "../apiUtil";
+import { make_api_call } from "../../apiUtil";
 
 
 function DeleteEvent(props) {
