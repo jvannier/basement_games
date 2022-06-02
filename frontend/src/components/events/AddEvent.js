@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
+import DateTimePicker from 'react-datetime-picker';
 import './AddEvent.css';
 import { make_api_call } from "../../apiUtil";
-// import DatePicker from 'react-date-picker';
-// import DatePicker from 'react-date-picker/dist/entry.nostyle';
-// import TimePicker from 'react-time-picker';
-// import TimePicker from 'react-time-picker/dist/entry.nostyle'
-import DateTimePicker from 'react-datetime-picker';
 
 
 function AddEvent(props) {
@@ -34,7 +30,10 @@ function AddEvent(props) {
                 props.setRefreshEvents(!props.refreshEvents);
             });
 
-            // TODO: HAve this cause a regrab of events (refreshEvents)
+            // Refresh list of events so they render without refresh
+            // props.setRefreshEvents(!props.refreshEvents);
+
+            // TODO: Right now it only refreshes after the first one -> if you spam submit it doesn't refresh after the first one. Why?
 
             // TODO: success message / empty out the input boxes? -> Do we want to just NOT preventDefault?
         }

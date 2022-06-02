@@ -1,5 +1,6 @@
 import { make_api_call } from "../../apiUtil";
 import DeleteEvent from "./DeleteEvent";
+import EditEventButton from "./EditEventButton";
 import JoinEvent from "./JoinEvent";
 import LeaveEvent from "./LeaveEvent";
 
@@ -87,7 +88,13 @@ async function get_events(
 
         // Add Edit Event Button
         event["edit"] = (
-            <div>SCREAMING</div>
+            <EditEventButton
+                userID={userID}
+                token={token}
+                events={data}
+                refreshEvents={refreshEvents}
+                setRefreshEvents={setRefreshEvents}
+            />
         );
 
         // Add Delete Button

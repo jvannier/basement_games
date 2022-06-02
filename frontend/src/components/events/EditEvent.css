@@ -1,0 +1,6 @@
+#edit_event {
+    display: grid;
+    border: 5px;
+    border-style: solid;
+    border-color: darkred;
+}

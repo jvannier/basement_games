@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import About from "./components/About";
 import Admin from "./components/Admin";
@@ -7,6 +7,7 @@ import NavBar from "./components/NavBar";
 import { is_logged_in_admin } from "./apiUtil";
 import { get_events } from "./components/events/eventsUtil";
 import './App.css';
+import EditEvent from "./components/events/EditEvent";
 
 
 function App() {
@@ -25,17 +26,29 @@ function App() {
     is_logged_in_admin(userID, token).then(result => {
       if (result === true) {
         setAdminPageLink(
-          <Route exact path="/admin" element={
-            <Admin
-              userID={userID}
-              token={token}
-              isAdmin={isAdmin}
-              events={events}
-              setEvents={setEvents}
-              refreshEvents={refreshEvents}
-              setRefreshEvents={setRefreshEvents}
-            />
-          }/>
+          <Fragment>
+            <Route exact path="/admin" element={
+              <Admin
+                userID={userID}
+                token={token}
+                isAdmin={isAdmin}
+                events={events}
+                setEvents={setEvents}
+                refreshEvents={refreshEvents}
+                setRefreshEvents={setRefreshEvents}
+              />
+            }/>
+            <Route exact path="/admin/edit_event/:eventID" element={
+              <EditEvent
+                userID={userID}
+                token={token}
+                isAdmin={isAdmin}
+                events={events}
+                refreshEvents={refreshEvents}
+                setRefreshEvents={setRefreshEvents}
+              />
+            }/>
+          </Fragment>
         );
       } else {
         setAdminPageLink("");
@@ -56,7 +69,6 @@ function App() {
   }, [userID, token, refreshEvents]);
 
   // TODO: SuspenseAPI stuff (+lazy loading)
-  // TODO: Make it so can refresh on route (i.e. /admin or /about) and have it still work
   return (
     <div className="App">
       <BrowserRouter>
