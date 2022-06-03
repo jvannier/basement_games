@@ -35,7 +35,17 @@ async function get_events(
     let data = await make_api_call(`events/`);
     data = data.map(event => {
         // Convert date from UTC (in DB) to user's timezone
-        event["date"] = new Date(event["date"]).toString();
+        // Also convert to MM/DD/YYYY HH:mm {AM|PM} format
+        let tempDate = new Date(event["date"]);
+        let hours = tempDate.getHours();
+        let amPM = "AM";
+        if (hours >= 12) {
+            amPM = "PM";
+            hours -= 12;
+        }
+        hours = hours.toString().padStart(2, '0')
+        let minutes = tempDate.getMinutes().toString().padStart(2, '0')
+        event["date"] = `${tempDate.toLocaleDateString()} ${hours}:${minutes} ${amPM}`;
 
         // Get people signed up for THIS event
         let signed_up_people = (

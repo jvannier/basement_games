@@ -52,7 +52,6 @@ function EditEvent(props) {
                     value: name, label: name, id: user.google_id,
                 }
                 if (event_signups.includes(user.google_id)) {
-                    console.log(user.google_id + " IS IN THIS EVENT :D", name)
                     tempPlayers.push(formatted_user);
                 }
 
@@ -81,7 +80,7 @@ function EditEvent(props) {
                 props.setRefreshEvents(!props.refreshEvents);
             });
 
-            // TODO: HAve this cause a regrab of events (refreshEvents)
+            // Add and remove players based on Select values (players state variable)
             make_api_call(
                 `events/join_bulk?userID=${props.userID}&token=${props.token}`,
                 "POST",
@@ -90,9 +89,9 @@ function EditEvent(props) {
                     eventID,
                 },
             ).then(res => {
-                console.log("Response: ", res)  // TODO REMOVE
+                // Refresh list of events
+                props.setRefreshEvents(!props.refreshEvents);
             })
-            console.log(players);
 
             // TODO: success message
             // TODO: Do we want to NOT preventDefault?
@@ -142,8 +141,7 @@ function EditEvent(props) {
 
             <label>
                 Signed Up Users:
-                 TODO: list in select (in pill form) + buttons to remove/add ppl?;
-                 <Select 
+                <Select 
                     value={players}
                     isMulti
                     options={users}
