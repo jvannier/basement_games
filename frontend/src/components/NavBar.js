@@ -12,7 +12,7 @@ function NavBar(props) {
     if (props.userID !== undefined) {
       is_logged_in_admin(props.userID, props.token).then(result => {
         if (result === true) {
-          setAdminPageLink(<Link to="/admin">Admin</Link>);
+          setAdminPageLink(<Link id="adminLink" to="/admin">Admin</Link>);
         } else {
           setAdminPageLink("");
         }
@@ -24,10 +24,17 @@ function NavBar(props) {
 
   return (
     <span className="NavBar">
-      <Link to="/">Events</Link>
-      <Link to="/about">About</Link>
+      <span id="shading">
+        <Link id="fakeLink" to="/"> </Link> 
+        {/* This link is just to get the shading CSS element to size
+            the same as the NavBar */}
+      </span>
+      <Link id="eventsLink" to="/">Events</Link>
+      <Link id="aboutLink" to="/about">About</Link>
       {adminPageLink}
-      {props.userName}
+      <div id="userName">
+        {props.userName}
+      </div>
       <Login
         userID={props.userID} setUserID={props.setUserID}
         setUserName={props.setUserName}

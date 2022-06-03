@@ -1,6 +1,65 @@
 .NavBar {
     display: flex;
-    justify-content:space-between;
+    justify-content: space-around;
     width: 100%;
     position: sticky;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+}
+
+#shading {
+/* TODO: new image? */
+    /* background: url("../../assets/texture.jpeg"); */
+    background-color: rgba(0,0,0,.8);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+}
+
+#shading:before {  /* Allow color overlay of texture */
+    background-color: inherit;
+    content: ' ';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+button {
+    margin-right: 0.25%
+}
+
+a {
+    text-decoration: none;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent;
+    flex-grow: 1;
+    margin-left: 6.5vw;
+    margin-right: 6.5vw;
+}
+
+#userName {  /* Mythic */
+    background: linear-gradient(45deg, rgb(180,50,25), rgb(245,145,5), rgb(180,50,25));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-left: 10vw;
+    margin-right: 2%;
+}
+
+#eventsLink { /* Uncommon */
+    background: linear-gradient(45deg, rgb(70,100,110), rgb(185,220,235), rgb(70,100,110));
+}
+
+#aboutLink { /* Common */
+    background: rgb(33,33,33);
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: dimgray;
+}
+
+#adminLink { /* Rare */
+    background: linear-gradient(45deg, rgb(118,98,55), rgb(230,205,140), rgb(118,98,55));
 }

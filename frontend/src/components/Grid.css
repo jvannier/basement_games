@@ -1,5 +1,7 @@
 [role=grid] {
     border-color: black;
+    height: 100%;
+    margin-top: 0.5%;
 }
 
 [role=gridcell], [role=columnheader] {
