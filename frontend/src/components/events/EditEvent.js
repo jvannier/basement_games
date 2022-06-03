@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
 import { make_api_call } from "../../apiUtil";
 import DateTimePicker from 'react-datetime-picker';
+import Select from 'react-select';
 import './EditEvent.css';
 
 
@@ -15,51 +16,96 @@ function EditEvent(props) {
     const [maxPeople, setMaxPeople] = useState(8);
     const [magicSet, setMagicSet] = useState();
     // TODO: ability to add / remove signed up people -> react-select had the multi select thing + in pills. get users from /users then could click add or remove.
+    const [players, setPlayers] = useState([]);
+    const [users, setUsers] = useState([]);
     
     useEffect(() => {
-        // Find event to edit
-        props.events.forEach(event => {
-            if (`${event.id}` === eventID) {
-                console.log("event to edit:", event);
+        async function getData() {
+            // Find event to edit
+            props.events.forEach(event => {
+                if (`${event.id}` === eventID) {
+                    // TODO: add/remove signed up ppl + delete(?)
+                    setEntryCost(parseFloat(event.entry_cost.substring(1)));
+                    setExtraDetails(event.extra_details);
+                    setEventDate(event.date);
+                    setEventName(event.name);
+                    setEventType(event.event_type);
+                    let max_people = event.max_people.split("/")[1];  // X/X
+                    setMaxPeople(max_people);
+                    setMagicSet(event.mtg_set);
+                }
+            });
 
-                // TODO: add/remove signed up ppl + delete(?)
-                setEntryCost(event.entry_cost);
-                setExtraDetails(event.extra_details);
-                setEventDate(event.date);
-                setEventName(event.name);
-                setEventType(event.event_type);
-                setMaxPeople(event.max_people);
-                setMagicSet(event.mtg_set);
-            }
-        });
+            // Get users signed up for each event
+            let event_signups = await make_api_call(`events/event_sign_ups/${eventID}`);
+            event_signups = event_signups.map(sign_up => {
+                return sign_up.user_id;
+            });
+            event_signups = [...new Set(event_signups)]
+            let tempPlayers = [];
 
-        // TODO: If event is not found then it'd been deleted -> show user smth?
+            // Get users information
+            let users = await make_api_call(`users/?userID=${props.userID}&token=${props.token}`)
+            users = users.map(user => {
+                let name = `${user.first_name} ${user.last_name}`;
+                let formatted_user = {
+                    value: name, label: name, id: user.google_id,
+                }
+                if (event_signups.includes(user.google_id)) {
+                    console.log(user.google_id + " IS IN THIS EVENT :D", name)
+                    tempPlayers.push(formatted_user);
+                }
+
+                return formatted_user;
+            });
+            setUsers(users);
+            setPlayers(tempPlayers);
+
+            // TODO: If event is not found then it'd been deleted -> show user smth?
+        }
+        getData();
     }, [props.events, props.isAdmin]);  // Re-render on events or isAdmin change
 
     function submit(event) {
         event.preventDefault();
 
         if (props.isAdmin === true) {
-            console.log("do the thing");
-
-            // const eventDateAsInt = Date.parse(eventDate);
+            const eventDateAsInt = Date.parse(eventDate);
 
             // Make API call to edit event
-            // make_api_call(`events/?userID=${props.userID}&token=${props.token}`, "POST", {
-            //     props.entryCost, props.extraDetails, props.eventDateAsInt,
-            //     props.eventName, props.eventType, props.maxPeople,
-            //     props.magicSet,
-            // }).then(res => {
-            //     // Refresh list of events
-            //     props.setRefreshEvents(!props.refreshEvents);
-            // });
+            make_api_call(`events/?userID=${props.userID}&token=${props.token}`, "PATCH", {
+                entryCost, extraDetails, eventDateAsInt, eventName,
+                eventType, maxPeople, magicSet, eventID,
+            }).then(res => {
+                // Refresh list of events
+                props.setRefreshEvents(!props.refreshEvents);
+            });
 
             // TODO: HAve this cause a regrab of events (refreshEvents)
+            make_api_call(
+                `events/join_bulk?userID=${props.userID}&token=${props.token}`,
+                "POST",
+                {
+                    players: JSON.stringify(players.map(player => player.id)),
+                    eventID,
+                },
+            ).then(res => {
+                console.log("Response: ", res)  // TODO REMOVE
+            })
+            console.log(players);
 
             // TODO: success message
             // TODO: Do we want to NOT preventDefault?
         }
     }
+
+    function handleSelectChange (value) {
+        if (value.length > maxPeople) {
+            alert("Not updating users. Over maximum number of entries.");  // TODO: don't use an alert
+        } else {
+            setPlayers(value);
+        }
+    };
 
     return (
         <form method="post" onSubmit={submit} id="edit_event">
@@ -96,7 +142,16 @@ function EditEvent(props) {
 
             <label>
                 Signed Up Users:
-                 TODO: list in select (in pill form) + buttons to remove/add ppl?
+                 TODO: list in select (in pill form) + buttons to remove/add ppl?;
+                 <Select 
+                    value={players}
+                    isMulti
+                    options={users}
+                    onChange={handleSelectChange}
+                    name="colors"
+                    className="basic-multi-select"
+                    classNamePrefix="select" 
+                />
             </label>
 
             <label>
