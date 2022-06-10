@@ -6,6 +6,7 @@ const make_api_call = async (endpoint, method = "GET", data = {}) => {
         let options = {
             mode: "same-site",
             method: method,
+            referrer: "strict-origin-when-cross-origin",
         };
         if (method === "POST" || method === "PATCH") {
             options["headers"] = {
