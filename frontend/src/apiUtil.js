@@ -4,7 +4,7 @@ import { API_URL } from "./consts";
 const make_api_call = async (endpoint, method = "GET", data = {}) => {
     try {
         let options = {
-            mode: "same-origin",
+            mode: "same-site",
             method: method,
         };
         if (method === "POST" || method === "PATCH") {
