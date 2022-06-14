@@ -152,6 +152,7 @@ module.exports.endpoints = (client) => {
 
     router.get('/event_sign_ups', async (req, res) => {
         query = `SELECT user_id, event_id FROM users_events;`;
+        console.log(query)
         await run_query(client, query, res);
     });
 

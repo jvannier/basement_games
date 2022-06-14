@@ -15,6 +15,7 @@ async function get_events(
     // Get users signed up for each event
     let event_signups_db_call = await make_api_call(`events/event_sign_ups`);
     let event_signups = {};  // Events to users signed up for them
+
     event_signups_db_call.forEach(sign_up => {
         if (event_signups[sign_up["event_id"]] === undefined) {
             event_signups[sign_up["event_id"]] = [sign_up["user_id"]];

@@ -4,7 +4,7 @@ import { API_URL } from "./consts";
 const make_api_call = async (endpoint, method = "GET", data = {}) => {
     try {
         let options = {
-            mode: "same-site",
+            mode: "same-origin",
             method: method,
             referrer: "strict-origin-when-cross-origin",
         };
