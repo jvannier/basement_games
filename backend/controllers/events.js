@@ -88,10 +88,8 @@ module.exports.endpoints = (client) => {
         if (err !== undefined) {
             return err;
         }
-        err = await detect_sql_injection(req.body, res);
-        if (err !== undefined) {
-            return err;
-        }
+        req.body.eventDate = new Date(req.body.eventDateAsInt).toUTCString()
+        req.body = await escape_args(req.body);
 
         // Check that token is valid and the user is an admin
         const result = await is_valid_logged_in_admin(
@@ -103,13 +101,13 @@ module.exports.endpoints = (client) => {
 
         let query = `
             UPDATE events SET
-                name='${req.body.eventName}',
-                date='${new Date(req.body.eventDateAsInt).toUTCString()}',
-                mtg_set='${req.body.magicSet}',
-                max_people='${req.body.maxPeople}',
-                entry_cost='${req.body.entryCost}',
-                event_type='${req.body.eventType}',
-                extra_details='${req.body.extraDetails}'
+                name=${req.body.eventName},
+                date=${req.body.eventDate},
+                mtg_set=${req.body.magicSet},
+                max_people=${req.body.maxPeople},
+                entry_cost=${req.body.entryCost},
+                event_type=${req.body.eventType},
+                extra_details=${req.body.extraDetails}
             WHERE id=${req.body.eventID};
         `;
         await run_query(client, query, res);

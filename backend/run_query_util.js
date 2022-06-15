@@ -28,6 +28,7 @@ module.exports.detect_sql_injection = async (query_params, res) => {
 }
 
 
+// TODO: use this in detect_sql_injection instead of raising an error
 module.exports.escape_args = async (params) => {
     // Iterate over all params and escape them
     for (let param in params) {
