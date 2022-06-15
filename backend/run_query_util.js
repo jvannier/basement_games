@@ -1,3 +1,6 @@
+const sqlstring = require('sqlstring');
+
+
 module.exports.run_query = async (client, query, res) => {
     let err, query_result = await client.query(query);
     if (err) {
@@ -22,4 +25,17 @@ module.exports.detect_sql_injection = async (query_params, res) => {
             })
         }
     }
+}
+
+
+module.exports.escape_args = async (params) => {
+    // Iterate over all params and escape them
+    for (let param in params) {
+        params[param] = sqlstring.escape(params[param]);
+        if (typeof(params[param]) === 'string') {
+            // \' as escaping doesn't work with the library used in this code
+            params[param] = params[param].replace(/\\'/g, "''");
+        }
+    }
+    return params;
 }

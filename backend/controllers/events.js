@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { detect_sql_injection, run_query } = require('../run_query_util');
+const { detect_sql_injection, escape_args, run_query } = require('../run_query_util');
 const { is_valid_logged_in_admin } = require("./util");
 const { is_valid_token } = require("./tokens");
 
@@ -55,10 +55,8 @@ module.exports.endpoints = (client) => {
         if (err !== undefined) {
             return err;
         }
-        err = await detect_sql_injection(req.body, res);
-        if (err !== undefined) {
-            return err;
-        }
+        req.body.eventDate = new Date(req.body.eventDateAsInt).toUTCString()
+        req.body = await escape_args(req.body);
 
         // Check that token is valid and the user is an admin
         const result = await is_valid_logged_in_admin(
@@ -73,13 +71,13 @@ module.exports.endpoints = (client) => {
                 name, date, mtg_set, max_people,
                 entry_cost, event_type, extra_details
             ) VALUES (
-                '${req.body.eventName}',
-                '${new Date(req.body.eventDateAsInt).toUTCString()}',
-                '${req.body.magicSet}',
+                ${req.body.eventName},
+                ${req.body.eventDate},
+                ${req.body.magicSet},
                 ${req.body.maxPeople},
-                '${req.body.entryCost}',
-                '${req.body.eventType}',
-                '${req.body.extraDetails}'
+                ${req.body.entryCost},
+                ${req.body.eventType},
+                ${req.body.extraDetails}
             );
         `;
         await run_query(client, query, res);
@@ -152,7 +150,6 @@ module.exports.endpoints = (client) => {
 
     router.get('/event_sign_ups', async (req, res) => {
         query = `SELECT user_id, event_id FROM users_events;`;
-        console.log(query)
         await run_query(client, query, res);
     });
 
