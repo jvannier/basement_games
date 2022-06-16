@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { detect_sql_injection, escape_args, run_query } = require('../run_query_util');
+const { detect_sql_injection, escape_args, run_query, unescape_arg } = require('../run_query_util');
 const { is_valid_logged_in_admin } = require("./util");
 const { is_valid_token } = require("./tokens");
 
@@ -47,7 +47,16 @@ module.exports.endpoints = (client) => {
 
     router.get('/', async (req, res) => {
         let query = "SELECT * FROM events ORDER BY date ASC;"
-        await run_query(client, query, res);
+        let err, query_result = await client.query(query);
+        if (err) {
+            return res.status(400).json(err);
+        } else {
+            let result = query_result.rows.map(event => {
+                event['extra_details'] = unescape_arg(event['extra_details']);
+                return event;
+            });
+            return res.status(200).json(result);
+        }
     });
 
     router.post('/', async (req, res) => {
@@ -56,7 +65,7 @@ module.exports.endpoints = (client) => {
             return err;
         }
         req.body.eventDate = new Date(req.body.eventDateAsInt).toUTCString()
-        req.body = await escape_args(req.body);
+        req.body = escape_args(req.body);
 
         // Check that token is valid and the user is an admin
         const result = await is_valid_logged_in_admin(

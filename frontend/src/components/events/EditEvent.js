@@ -24,7 +24,7 @@ function EditEvent(props) {
             // Find event to edit
             props.events.forEach(event => {
                 if (`${event.id}` === eventID) {
-                    // TODO: add/remove signed up ppl + delete(?)
+                    // TODO: add delete(?) event ability
                     setEntryCost(parseFloat(event.entry_cost.substring(1)));
                     setExtraDetails(event.extra_details);
                     setEventDate(event.date);

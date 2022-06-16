@@ -28,15 +28,40 @@ module.exports.detect_sql_injection = async (query_params, res) => {
 }
 
 
+const escape_arg = (arg) => {
+    arg = sqlstring.escape(arg);
+    if (typeof(arg) === 'string') {
+        // \' as escaping doesn't work with the library used in this code
+        arg = arg.replace(/\\'/g, "''");
+    }
+    return arg;
+}
+// exported separately so escape_args can use the function
+module.exports.escape_arg = escape_arg;
+
+
+module.exports.unescape_arg = (arg) => {
+    if (typeof(arg) !== 'string') {
+        return arg
+    }
+
+    // Double escape it to ensure all escapes are escaped twice
+    // so it's easy to find (and remove / 'replace' them)
+    let double_escaped = escape_arg(arg);
+    let unescaped = double_escaped.replace(/\\/g, "");
+
+    // Replace double ''s added from \' not working with this sql librbary
+    unescaped = unescaped.replace(/''/g, "'");
+    // Remove uneeded surrounding quotes
+    return unescaped.slice(1, -1);
+}
+
+
 // TODO: use this in detect_sql_injection instead of raising an error
-module.exports.escape_args = async (params) => {
+module.exports.escape_args = (params) => {
     // Iterate over all params and escape them
     for (let param in params) {
-        params[param] = sqlstring.escape(params[param]);
-        if (typeof(params[param]) === 'string') {
-            // \' as escaping doesn't work with the library used in this code
-            params[param] = params[param].replace(/\\'/g, "''");
-        }
+        params[param] = escape_arg(params[param]);
     }
     return params;
 }
