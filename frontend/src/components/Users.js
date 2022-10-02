@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import DataGrid from 'react-data-grid';
 import { make_api_call } from "../apiUtil";
+import Row from "./Row.js";
+import {Table, Thead, Tbody, Tr, Th} from 'react-super-responsive-table';
+import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 import './Grid.css';
 
 
@@ -40,15 +42,27 @@ function Users(props) {
         users();
     }, [props.token, props.isAdmin]);
 
+    let columns = [
+        { key: "first_name", name: "First Name" },
+        { key: "last_name", name: "Last Name" },
+        { key: "email", name: "Email" },
+        { key: "account_created", name: "Account Created" },
+        { key: "last_login", name: "Last Login" },
+        { key: "events_joined", name: "Events Joined" },
+    ];
     return (
-        <DataGrid rows={users} columns={[
-            { key: "first_name", name: "First Name" },
-            { key: "last_name", name: "Last Name" },
-            { key: "email", name: "Email" },
-            { key: "account_created", name: "Account Created" },
-            { key: "last_login", name: "Last Login" },
-            { key: "events_joined", name: "Events Joined" },
-        ]} />
+        <Table role="grid">
+            <Thead>
+                <Tr>
+                    {columns.map(row => <Th scope="col">{row["name"]}</Th>)}
+                </Tr>
+            </Thead>
+            <Tbody>
+                {users.map(user =>
+                    <Row columns={columns} row={user}/>
+                )}
+            </Tbody>
+        </Table>
     );
 }
 

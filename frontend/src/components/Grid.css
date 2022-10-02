@@ -2,10 +2,31 @@
     border-color: black;
     height: 100%;
     margin-top: 0.5%;
-    --webkit-overflow-scrolling: auto;  /* TODO: See if this fixes jitter on other laptop */
-    max-width: 100vw
 }
 
-[role=gridcell], [role=columnheader] {
-    background-color: gray !important;
+.responsiveTable {
+    background-color: gray;
+    border: 3px !important;
+    border-color: black !important;
+}
+
+.responsiveTable td.pivoted {
+    border: 3px !important;
+}
+
+[role=grid] {
+    height: 100%;
+    margin-top: 0.5%;
+}
+
+.responsiveTable {
+  background-color: dimgray;
+}
+
+th {
+    background-color: gray;
+}
+
+td {
+    background-color: darkgray;
 }

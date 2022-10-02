@@ -16,7 +16,7 @@ function App() {
   let [token, setToken] = useState(localStorage.getItem("token"));
   let [isAdmin, setIsAdmin] = useState(false);
 
-  // Store events att App level so they're available everywhere:
+  // Store events at App level so they're available everywhere:
   let [events, setEvents] = useState([]);
   let [refreshEvents, setRefreshEvents] = useState(false);  // change flag to force refresh events
 
